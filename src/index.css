@@ -2,15 +2,15 @@
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
-  --bg-dark: #090d16;
-  --bg-card: rgba(15, 23, 42, 0.75);
-  --border-card: rgba(255, 255, 255, 0.08);
-
-  --color-primary: #10b981;
-  --color-primary-glow: rgba(16, 185, 129, 0.25);
+  --bg-app: #f0f4f9;
+  --bg-card: #ffffff;
+  --border-card: #e2e8f0;
+  
+  --color-primary: #0284c7;
+  --color-cyan: #06b6d4;
+  --color-dark: #0f172a;
   --color-dry: #f59e0b;
-  --color-wet: #06b6d4;
-  --color-danger: #ef4444;
+  --color-wet: #0284c7;
 }
 
 * {
@@ -21,96 +21,104 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-dark);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(245, 158, 11, 0.05) 0px, transparent 50%);
-  background-attachment: fixed;
-  color: #f1f5f9;
+  background-color: var(--bg-app);
+  color: #1e293b;
   min-height: 100vh;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Glassmorphism utility */
-.glass-panel {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-card);
-  border-radius: 1rem;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-}
-
-.glass-card {
-  background: rgba(30, 41, 59, 0.5);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0.875rem;
+/* Light Neumorphic Card Base */
+.neo-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 4px 10px -2px rgba(15, 23, 42, 0.02);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.glass-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.6);
+.neo-card:hover {
+  box-shadow: 0 14px 30px -5px rgba(15, 23, 42, 0.08), 0 6px 15px -2px rgba(15, 23, 42, 0.04);
 }
 
-/* Glow utility classes */
-.glow-emerald {
-  box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.3);
+/* Dark Hero Widget Card (Matching Reference Photo Left Balance Card) */
+.hero-dark-card {
+  background: linear-gradient(145deg, #091022 0%, #0f172a 50%, #1e293b 100%);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.25);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
 }
 
-.glow-amber {
-  box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.3);
+.hero-dark-card::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -30%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.glow-cyan {
-  box-shadow: 0 0 20px -3px rgba(6, 182, 212, 0.3);
+/* Soft Navigation Pill Buttons */
+.pill-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.glow-red {
-  box-shadow: 0 0 20px -3px rgba(239, 68, 68, 0.35);
+.pill-btn-active {
+  background-color: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
 }
 
-/* Custom Scrollbar */
+.pill-btn-inactive {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.pill-btn-inactive:hover {
+  background-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* Glow utilities */
+.glow-cyan-light {
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+}
+
+.glow-blue-light {
+  box-shadow: 0 0 15px rgba(2, 132, 199, 0.3);
+}
+
+/* Custom Soft Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: #e2e8f0;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
-  border-radius: 4px;
+  background: #cbd5e1;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(71, 85, 105, 1);
+  background: #94a3b8;
 }
 
-/* Keyframe animations */
-@keyframes pulse-slow {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.96); }
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 2.5s infinite ease-in-out;
-}
-
-@keyframes ripple {
-  0% { transform: scale(0.8); opacity: 1; }
-  100% { transform: scale(2.2); opacity: 0; }
-}
-
-.ripple-effect::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  border: 2px solid currentColor;
-  animation: ripple 1.8s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+.animate-float {
+  animation: float-subtle 4s ease-in-out infinite;
 }

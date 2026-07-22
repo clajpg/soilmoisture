@@ -1,123 +1,85 @@
 import React from 'react';
-import { Droplet, Cpu, Info, AlertCircle } from 'lucide-react';
+import { 
+  Sprout, 
+  Cpu, 
+  Droplets, 
+  AlertTriangle, 
+  CheckCircle2, 
+  Flame,
+  ArrowRight
+} from 'lucide-react';
 import { getMoistureStatus } from '../services/thingspeak';
 
-export function SensorCard({ 
-  index, 
-  value, 
-  sensorName, 
-  gpioPin, 
-  thresholds 
-}) {
-  const moistureVal = value !== null && !isNaN(value) ? parseFloat(value) : null;
-  const status = getMoistureStatus(moistureVal, thresholds);
+export function SensorCard({ index, sensorName, gpioPin, value, thresholds }) {
+  const hasValue = value !== null && !isNaN(value);
+  const numericVal = hasValue ? value : 0;
+  const status = getMoistureStatus(numericVal, thresholds);
 
-  // Approximate ADC raw value based on Arduino sketch mapping:
-  // map(raw, 3000, 1200, 0, 100) -> raw = 3000 - (percent * 18)
-  const approxADC = moistureVal !== null
-    ? Math.round(3000 - (moistureVal * 18))
-    : 'N/A';
+  // Status visual configurations
+  let badgeColor = 'bg-sky-50 text-sky-600 border-sky-100';
+  let progressColor = 'from-sky-500 to-cyan-400';
 
-  // Gauge calculation for circular SVG arc
-  const radius = 42;
-  const circumference = 2 * Math.PI * radius;
-  const validPercent = moistureVal !== null ? Math.min(100, Math.max(0, moistureVal)) : 0;
-  const strokeDashoffset = circumference - (validPercent / 100) * circumference;
+  if (status.code === 'DRY') {
+    badgeColor = 'bg-amber-50 text-amber-600 border-amber-200';
+    progressColor = 'from-amber-500 to-orange-400';
+  } else if (status.code === 'WET') {
+    badgeColor = 'bg-cyan-50 text-cyan-600 border-cyan-200';
+    progressColor = 'from-cyan-500 to-blue-500';
+  }
 
   return (
-    <div className={`glass-card p-5 relative overflow-hidden flex flex-col justify-between border transition-all duration-300 ${status.borderClass}`}>
+    <div className="neo-card p-5 flex flex-col justify-between hover:translate-y-[-2px] transition-all duration-200">
       
-      {/* Background Subtle Glow */}
-      <div 
-        className="absolute -right-12 -top-12 w-32 h-32 rounded-full blur-3xl opacity-15 pointer-events-none"
-        style={{ backgroundColor: status.gaugeColor }}
-      />
-
-      {/* Card Top Info */}
-      <div>
-        <div className="flex items-start justify-between mb-3">
+      {/* Header Info */}
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center space-x-3">
+          <div className="p-2.5 rounded-2xl bg-slate-100 text-slate-700">
+            <Sprout className="w-5 h-5 text-sky-600" />
+          </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-slate-800 text-xs font-bold text-slate-300 border border-slate-700">
-                #{index + 1}
-              </span>
-              <h3 className="text-sm font-bold text-white tracking-wide truncate max-w-[140px] sm:max-w-[170px]" title={sensorName}>
-                {sensorName}
-              </h3>
-            </div>
-            <div className="flex items-center space-x-2 mt-1 text-[11px] text-slate-400">
-              <span className="flex items-center gap-1 font-mono bg-slate-900/60 px-1.5 py-0.5 rounded border border-slate-800">
-                <Cpu className="w-3 h-3 text-cyan-400" /> GPIO {gpioPin}
-              </span>
-              <span>&bull;</span>
-              <span>ADC: ~{approxADC}</span>
+            <h4 className="text-sm font-bold text-slate-800 line-clamp-1">
+              {sensorName.split('(')[0].trim()}
+            </h4>
+            <div className="flex items-center space-x-1 text-[11px] text-slate-400 font-medium">
+              <Cpu className="w-3 h-3 text-slate-400" />
+              <span>ADC1 GPIO {gpioPin}</span>
             </div>
           </div>
-
-          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${status.badgeClass}`}>
-            {moistureVal !== null ? `${moistureVal}%` : 'Offline'}
-          </span>
         </div>
 
-        {/* Circular Gauge Centerpiece */}
-        <div className="relative my-4 flex items-center justify-center">
-          <svg className="w-36 h-36 transform -rotate-90">
-            {/* Background Track Circle */}
-            <circle
-              cx="72"
-              cy="72"
-              r={radius}
-              stroke="currentColor"
-              strokeWidth="10"
-              className="text-slate-800/80"
-              fill="transparent"
-            />
-            {/* Foreground Arc */}
-            <circle
-              cx="72"
-              cy="72"
-              r={radius}
-              stroke={status.gaugeColor}
-              strokeWidth="10"
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              fill="transparent"
-              className="transition-all duration-1000 ease-out"
-            />
-          </svg>
+        <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${badgeColor}`}>
+          {status.label}
+        </span>
+      </div>
 
-          {/* Centered Value Text */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <Droplet className={`w-5 h-5 mb-0.5 ${status.colorClass}`} />
-            <span className="text-2xl font-black text-white tracking-tight">
-              {moistureVal !== null ? moistureVal.toFixed(1) : '--'}
-              <span className="text-xs text-slate-400 font-normal">%</span>
-            </span>
-            <span className="text-[10px] text-slate-400 font-medium">
-              Kelembapan
-            </span>
-          </div>
+      {/* Numerical Value Display */}
+      <div className="my-3 flex items-baseline justify-between">
+        <div>
+          <span className="text-3xl font-black text-slate-900 tracking-tight font-mono">
+            {hasValue ? numericVal.toFixed(1) : '--'}
+          </span>
+          <span className="text-sm font-bold text-slate-400 ml-1">%</span>
+        </div>
+
+        <div className="text-right text-[11px] text-slate-400">
+          Target Range: <br />
+          <span className="font-semibold text-slate-600">{thresholds.dry}% - {thresholds.wet}%</span>
         </div>
       </div>
 
-      {/* Bottom Status Bar & Indicator */}
-      <div className="mt-2 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-        <div className="flex items-center space-x-1.5">
-          <span 
-            className="w-2 h-2 rounded-full" 
-            style={{ backgroundColor: status.gaugeColor }}
+      {/* Moisture Level Progress Bar */}
+      <div>
+        <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden p-0.5">
+          <div 
+            className={`h-full rounded-full bg-gradient-to-r ${progressColor} transition-all duration-500 ease-out`}
+            style={{ width: `${Math.min(100, Math.max(0, numericVal))}%` }}
           />
-          <span className={`text-xs font-semibold ${status.colorClass}`}>
-            {status.label}
-          </span>
         </div>
-
-        {moistureVal < thresholds.dry && (
-          <span className="flex items-center gap-1 text-[11px] text-amber-400 font-semibold animate-pulse">
-            <AlertCircle className="w-3.5 h-3.5" /> Siram!
-          </span>
-        )}
+        
+        <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2">
+          <span>Kering (0%)</span>
+          <span>Sangat Basah (100%)</span>
+        </div>
       </div>
 
     </div>

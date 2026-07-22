@@ -128,6 +128,7 @@ export function getMoistureStatus(percent, thresholds = DEFAULT_CONFIG.threshold
     return {
       label: 'Tidak ada data',
       code: 'UNKNOWN',
+      textClass: 'text-slate-400',
       colorClass: 'text-slate-400',
       bgClass: 'bg-slate-500/10',
       borderClass: 'border-slate-500/20',
@@ -138,12 +139,13 @@ export function getMoistureStatus(percent, thresholds = DEFAULT_CONFIG.threshold
 
   if (percent < thresholds.dry) {
     return {
-      label: 'Kering (Perlu Penyiraman)',
+      label: 'Kering',
       code: 'DRY',
+      textClass: 'text-amber-500',
       colorClass: 'text-amber-400',
       bgClass: 'bg-amber-500/10',
       borderClass: 'border-amber-500/30',
-      badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/40 glow-amber',
+      badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
       gaugeColor: '#f59e0b'
     };
   }
@@ -152,21 +154,23 @@ export function getMoistureStatus(percent, thresholds = DEFAULT_CONFIG.threshold
     return {
       label: 'Sangat Basah',
       code: 'WET',
+      textClass: 'text-cyan-500',
       colorClass: 'text-cyan-400',
       bgClass: 'bg-cyan-500/10',
       borderClass: 'border-cyan-500/30',
-      badgeClass: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 glow-cyan',
+      badgeClass: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
       gaugeColor: '#06b6d4'
     };
   }
 
   return {
-    label: 'Optimal / Normal',
+    label: 'Optimal',
     code: 'OPTIMAL',
+    textClass: 'text-sky-500',
     colorClass: 'text-emerald-400',
     bgClass: 'bg-emerald-500/10',
     borderClass: 'border-emerald-500/30',
-    badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 glow-emerald',
+    badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
     gaugeColor: '#10b981'
   };
 }

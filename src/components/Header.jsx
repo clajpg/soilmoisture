@@ -5,10 +5,10 @@ import {
   Settings, 
   Code, 
   Wifi, 
-  WifiOff, 
   Sparkles,
-  ExternalLink,
-  Layers
+  Layers,
+  Activity,
+  BarChart2
 } from 'lucide-react';
 
 export function Header({
@@ -18,7 +18,9 @@ export function Header({
   onRefresh,
   onOpenSettings,
   onOpenCodeModal,
-  channelId
+  channelId,
+  activeTab,
+  setActiveTab
 }) {
   const formattedTime = lastUpdated
     ? new Date(lastUpdated).toLocaleTimeString('id-ID', {
@@ -29,69 +31,90 @@ export function Header({
     : '-';
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 rounded-none mb-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         
-        {/* Brand & Title */}
+        {/* Brand Logo & Title (Matching top left of reference photo) */}
         <div className="flex items-center space-x-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/20">
-            <Sprout className="w-6 h-6 stroke-[2.5]" />
+          <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-sky-600 to-cyan-500 text-white shadow-md shadow-sky-500/20">
+            <Sprout className="w-5 h-5 stroke-[2.5]" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                Soil Moisture Monitor
+              <h1 className="text-lg font-black tracking-tight text-slate-900">
+                SoilMoisture <span className="text-cyan-600 font-semibold">Pro</span>
               </h1>
-              {isMock ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                  <Sparkles className="w-3 h-3" /> DEMO MODE
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                  <Wifi className="w-3 h-3 animate-pulse" /> LIVE (CH: {channelId})
-                </span>
-              )}
             </div>
-            <p className="text-xs text-slate-400 font-medium">
-              ESP32 + 6x DFRobot Soil Moisture Sensors &bull; ThingSpeak IoT Cloud
+            <p className="text-[11px] text-slate-400 font-medium">
+              ESP32 &bull; 6x ADC Soil Sensors &bull; ThingSpeak Cloud
             </p>
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center flex-wrap gap-2.5">
-          {/* Last Update Badge */}
-          <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            <span className="text-slate-400">Sync Terakhir:</span>
-            <span className="font-mono font-semibold text-emerald-400">{formattedTime}</span>
-          </div>
+        {/* Center Pill Navigation Bar (Matching middle header in reference photo) */}
+        <div className="flex items-center justify-center p-1 rounded-full bg-slate-100 border border-slate-200 self-center md:self-auto overflow-x-auto max-w-full">
+          <button
+            onClick={() => setActiveTab && setActiveTab('dashboard')}
+            className={`pill-btn ${(!activeTab || activeTab === 'dashboard') ? 'pill-btn-active' : 'pill-btn-inactive'}`}
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveTab && setActiveTab('sensors')}
+            className={`pill-btn ${activeTab === 'sensors' ? 'pill-btn-active' : 'pill-btn-inactive'}`}
+          >
+            Sensor Zone
+          </button>
+          <button
+            onClick={() => setActiveTab && setActiveTab('radar')}
+            className={`pill-btn ${activeTab === 'radar' ? 'pill-btn-active' : 'pill-btn-inactive'}`}
+          >
+            Radar Analisis
+          </button>
+          <button
+            onClick={() => setActiveTab && setActiveTab('history')}
+            className={`pill-btn ${activeTab === 'history' ? 'pill-btn-active' : 'pill-btn-inactive'}`}
+          >
+            Riwayat Data
+          </button>
+        </div>
 
-          {/* Refresh Button */}
+        {/* Right Quick Action Pills & Status */}
+        <div className="flex items-center space-x-2 justify-end">
+          {/* Status Badge Pill */}
+          {isMock ? (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200">
+              <Sparkles className="w-3.5 h-3.5" /> DEMO
+            </span>
+          ) : (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
+              <Wifi className="w-3.5 h-3.5 animate-pulse" /> CH {channelId}
+            </span>
+          )}
+
+          {/* Refresh Button Pill */}
           <button
             onClick={onRefresh}
             disabled={isLoading}
-            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-slate-200 text-xs font-medium transition-all active:scale-95 disabled:opacity-50"
-            title="Refresh Data Manual"
+            className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors disabled:opacity-50"
+            title="Sync Data Telemetri"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-emerald-400' : ''}`} />
-            <span>{isLoading ? 'Memuat...' : 'Refresh'}</span>
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-sky-600' : ''}`} />
           </button>
 
-          {/* Arduino Code Button */}
+          {/* ESP32 Arduino Code Pill */}
           <button
             onClick={onOpenCodeModal}
-            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-slate-200 text-xs font-medium transition-all active:scale-95"
-            title="Lihat Skema Wiring & Kode ESP32"
+            className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors"
           >
-            <Code className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Kode ESP32</span>
+            <Code className="w-3.5 h-3.5 text-cyan-600" />
+            <span>Kode ESP32</span>
           </button>
 
-          {/* Settings Button */}
+          {/* Settings API Key Action Button */}
           <button
             onClick={onOpenSettings}
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-semibold text-xs transition-all shadow-md shadow-emerald-600/20 active:scale-95"
+            className="flex items-center space-x-1.5 px-4 py-1.5 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition-all shadow-md shadow-sky-600/20 active:scale-95"
           >
             <Settings className="w-3.5 h-3.5" />
             <span>Pengaturan API</span>
